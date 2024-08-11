@@ -1,0 +1,45 @@
+# dune build
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /home/dudu/.cache/dune/db
+# Workspace root: /home/dudu/repos/trabalho-semantica/l1interpreter
+# Auto-detected concurrency: 12
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_01d698_output
+# Promoting "_build/default/l1interpreter.opam" to "l1interpreter.opam"
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -bin-annot-occurrences -I lib/.l1interpreter.objs/byte -no-alias-deps -opaque -o lib/.l1interpreter.objs/byte/l1interpreter.cmo -c -impl lib/l1interpreter.ml-gen)
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl bin/main.ml) > _build/default/bin/.main.eobjs/dune__exe__Main.impl.d
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/l1interpreter.cma lib/.l1interpreter.objs/byte/l1interpreter.cmo)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I test/.test_l1interpreter.eobjs/byte -no-alias-deps -opaque -o test/.test_l1interpreter.eobjs/byte/dune__exe__Test_l1interpreter.cmi -c -intf test/test_l1interpreter.mli)
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I lib/.l1interpreter.objs/byte -I lib/.l1interpreter.objs/native -intf-suffix .ml-gen -no-alias-deps -opaque -o lib/.l1interpreter.objs/native/l1interpreter.cmx -c -impl lib/l1interpreter.ml-gen)
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl bin/ast.ml) > _build/default/bin/.main.eobjs/dune__exe__Ast.impl.d
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl bin/types.ml) > _build/default/bin/.main.eobjs/dune__exe__Types.impl.d
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl bin/evaluator.ml) > _build/default/bin/.main.eobjs/dune__exe__Evaluator.impl.d
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl bin/environment.ml) > _build/default/bin/.main.eobjs/dune__exe__Environment.impl.d
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I test/.test_l1interpreter.eobjs/byte -I test/.test_l1interpreter.eobjs/native -intf-suffix .ml -no-alias-deps -opaque -o test/.test_l1interpreter.eobjs/native/dune__exe__Test_l1interpreter.cmx -c -impl test/test_l1interpreter.ml)
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -intf bin/main.mli) > _build/default/bin/.main.eobjs/dune__exe__Main.intf.d
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -bin-annot-occurrences -I bin/.main.eobjs/byte -no-alias-deps -opaque -o bin/.main.eobjs/byte/dune__exe.cmo -c -impl bin/.main.eobjs/dune__exe.ml-gen)
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/l1interpreter.cmxa lib/.l1interpreter.objs/native/l1interpreter.cmx)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I bin/.main.eobjs/byte -I lib/.l1interpreter.objs/byte -no-alias-deps -opaque -open Dune__exe -o bin/.main.eobjs/byte/dune__exe__Main.cmi -c -intf bin/main.mli)
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I bin/.main.eobjs/byte -I bin/.main.eobjs/native -intf-suffix .ml-gen -no-alias-deps -opaque -o bin/.main.eobjs/native/dune__exe.cmx -c -impl bin/.main.eobjs/dune__exe.ml-gen)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I bin/.main.eobjs/byte -I lib/.l1interpreter.objs/byte -no-alias-deps -opaque -open Dune__exe -o bin/.main.eobjs/byte/dune__exe__Types.cmo -c -impl bin/types.ml)
+> File "bin/types.ml", lines 15-19, characters 2-66:
+> 15 | ..match t with
+> 16 |     TyInt  -> "int"
+> 17 |   | TyBool -> "bool"
+> 18 |   | TyFn(t1,t2)   ->  "("  ^ (ttos t1) ^ " --> " ^ (ttos t2) ^ ")"
+> 19 |   | TyPair(t1,t2) ->  "("  ^ (ttos t1) ^ " * "   ^ (ttos t2) ^ ")"
+> Error (warning 8 [partial-match]): this pattern-matching is not exhaustive.
+> Here is an example of a case that is not matched:
+> (TyNothing _|TyList _)
+[2]
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib -o lib/l1interpreter.cmxs lib/l1interpreter.cmxa)
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o test/test_l1interpreter.exe test/.test_l1interpreter.eobjs/native/dune__exe__Test_l1interpreter.cmx)
