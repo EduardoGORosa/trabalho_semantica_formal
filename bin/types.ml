@@ -1,22 +1,15 @@
 (* types.ml *)
 
 exception BugParser
+exception TypeError of string
 
 type tipo =
     TyInt
   | TyBool
   | TyFn of tipo * tipo
   | TyPair of tipo * tipo
-  | TyNothing of tipo
+  | TyNothing of tipo  
+  | TyVar of int
   | TyList of tipo
-
-(* Auxiliary function to convert types to string *)
-let rec ttos (t:tipo) : string =
-  match t with
-    TyInt  -> "int"
-  | TyBool -> "bool"
-  | TyFn(t1,t2)   ->  "("  ^ (ttos t1) ^ " --> " ^ (ttos t2) ^ ")"
-  | TyPair(t1,t2) ->  "("  ^ (ttos t1) ^ " * "   ^ (ttos t2) ^ ")"
-
-exception TypeError of string
+  | TyMatch of tipo
 

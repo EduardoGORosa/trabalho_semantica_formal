@@ -1,4 +1,4 @@
 (lang dune 3.16)
 (name l1interpreter)
-(sections (lib .) (bin ../../bin))
-(files (lib (META dune-package opam)) (bin (l1interpreter)))
+(sections (lib .) (bin ../../bin) (doc ../../doc/l1interpreter))
+(files (lib (META dune-package opam)) (bin (l1interpreter)) (doc (README.md)))

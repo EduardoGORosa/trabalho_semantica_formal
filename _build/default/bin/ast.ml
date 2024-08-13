@@ -1,6 +1,4 @@
 (* ast.ml *)
-open Types
-
 type ident = string
 
 type op = Sum | Sub | Mult | Div | Eq | Gt | Lt | Geq | Leq | And | Or 
@@ -14,10 +12,10 @@ type expr =
   | Fst of expr
   | Snd of expr
   | If of expr * expr * expr
-  | Fn of ident * tipo * expr
+  | Fn of ident * expr
   | App of expr * expr
-  | Let of ident * tipo * expr * expr
-  | LetRec of ident * tipo * expr * expr
+  | Let of ident * expr * expr
+  | LetRec of ident * ident * expr * expr
   | MatchList of expr * ident * expr * ident * expr
   | MatchJust of expr * expr 
   | Cons of expr * expr

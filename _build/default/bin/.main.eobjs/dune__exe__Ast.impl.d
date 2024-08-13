@@ -1,1 +1,1 @@
-bin/ast.ml: Types
+bin/ast.ml:
