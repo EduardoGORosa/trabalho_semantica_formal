@@ -1,5 +1,4 @@
 (* evaluator.ml *)
-open Ast
 open Types
 open Environment
 
@@ -16,15 +15,13 @@ let compute (oper: op) (v1: valor) (v2: valor): valor =
   | (Lt, VNum(n1), VNum(n2))  -> VBool (n1 < n2)  
   | (Geq, VNum(n1), VNum(n2)) -> VBool (n1 >= n2) 
   | (Leq, VNum(n1), VNum(n2)) -> VBool (n1 <= n2)  
-  | (And, VBool(n1), VBool(n2)) -> VBool (n1 && n2) 
-  | (Or, VBool(n1), VBool(n2)) -> VBool (n1 || n2)  
   | _ -> raise BugTypeInfer
 
 let rec eval (renv:renv) (e:expr) :valor =
   match e with
     Num n -> VNum n
   | Var x ->
-      (match lookup_renv renv x with
+      (match lookup renv x with
          Some v -> v
        | None -> raise BugTypeInfer ) 
   | Bool b -> VBool b 
@@ -49,7 +46,7 @@ let rec eval (renv:renv) (e:expr) :valor =
          VBool true  -> eval renv e2
        | VBool false -> eval renv e3
        | _ -> raise BugTypeInfer )
-  | Fn(x,_,e1)  -> VClos(x,e1, renv)
+  | Fn(x,e1)  -> VClos(x,e1, renv)
   | App(e1,e2) ->
       let v1 = eval renv e1 in
       let v2 = eval renv e2 in
@@ -59,11 +56,11 @@ let rec eval (renv:renv) (e:expr) :valor =
        | VRClos(f,x,e',renv') -> 
            eval  ((f,v1) ::(x,v2) :: renv')  e' 
        | _  -> raise BugTypeInfer) 
-  | Let(x,_,e1,e2) ->
+  | Let(x,e1,e2) ->
       let v1 = eval renv e1
       in eval ((x,v1) :: renv) e2
-  | LetRec(f,TyFn(t1,t2),Fn(x,tx,e1), e2) when t1 = tx ->
+  | LetRec(f, x, e1, e2) ->
       let renv'=  (f, VRClos(f,x,e1,renv)) :: renv
       in eval renv' e2
-  | LetRec _ -> raise BugParser 
+  | Nil -> VNil
 
