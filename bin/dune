@@ -1,4 +1,5 @@
 (executable
- (public_name l1interpreter)
  (name main)
- (libraries l1interpreter))
+ (libraries l1interpreter)
+ (modules environment evaluator main types utils))
+

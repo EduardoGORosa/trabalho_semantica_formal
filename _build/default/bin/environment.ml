@@ -1,5 +1,4 @@
 (* environment.ml *)
-
 open Types
 open Utils
 
@@ -84,21 +83,24 @@ let rec collect (g:tyenv) (e:expr) : (constraints * tipo)  =
       let (c1,tp1) = collect g1 e1            in
       let (c2,tp2) = collect g2 e2            in
       (c1@c2@[(TyVar tX,TyFn(TyVar tY,tp1))],   tp2)
- (*TODO | Nothing ->
+  | Nothing -> let tX = newvar() in 
+      ([], TyMaybe (TyVar tX))
+ (*TODO 
   | Just ->
       let t = newvar() in
   | MatchList ->
   | MatchJust ->
 *)
   | Nil ->
-      let tA = newvar() in
-      ([], TyList (TyVar tA))
-  (*TODO| Cons (e1,e2) ->
+      let tX = newvar() in
+      ([], TyList (TyVar tX))
+  (*TODO
+  | Cons (e1,e2) ->
       let (c1,tp1) = collect g e1 in
       let (c2,tp2) = collect g e2 in
       (c1@c2@[(tp2,TyList tp1)], tp2)*)
-(* aplicação de substituição a tipo *)
-           
+
+(* aplicação de substituição a tipo *)         
 let rec appsubs (s:subst) (tp:tipo) : tipo =
   match tp with
     TyInt           -> TyInt
@@ -151,6 +153,7 @@ let rec unify (c:constraints) : subst =
   | (TyFn(tp1,tp2),  TyFn(tp3,tp4)  ) ::c' -> unify ((tp1,tp3)::(tp2,tp4)::c')
   | (TyPair(tp1,tp2), TyPair(tp3,tp4)) ::c' -> unify ((tp1,tp3)::(tp2,tp4)::c')                          
   | (TyList tp1, TyList tp2) ::c' -> unify ((tp1,tp2)::c')
+  | (TyMaybe tp1, TyMaybe tp2) ::c' -> unify ((tp1,tp2)::c')
   | (TyVar x1, tp2)::c' -> 
       if var_in_tipo x1 tp2
       then raise (UnifyFail(TyVar x1, tp2))
@@ -168,19 +171,22 @@ let rec unify (c:constraints) : subst =
 
 (* INFERÊNCIA DE TIPOS - CHAMADA PRINCIPAL *)
 let type_infer (e:expr) : tipo =
-  print_string "\nexpr:\n";
+  print_string "expr:";
   print_string (expr_str e);
-  print_string "\n\n";
+  print_string "\n";
   try
     let (c,tp) = collect [] e  in
     let s      = unify c       in
     let tf     = appsubs s tp  in
-    print_string "\nRestrições:\n";
+    print_string "Restrições:";
     print_constr c;
+    print_string "\n";
     print_string "Tipo inferido: ";    
     print_string (ttos tp);
-    print_string "\n\nSubstituição:\n";
+    print_string "\n";
+    print_string "Substituição:";
     print_subst s;
+    print_string "\n";
     print_string "Tipo inferido (após subs): ";
     print_string (ttos tf);
     print_string "\n\n";

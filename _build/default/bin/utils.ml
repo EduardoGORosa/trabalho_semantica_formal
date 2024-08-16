@@ -47,21 +47,21 @@ let rec expr_str (e : expr) : string =
   | App (e1, e2) ->
       "(" ^ expr_str e1 ^ " " ^ expr_str e2 ^ ")"
   | Let (x, e1, e2) ->
-      "(let " ^ x ^ " = " ^ expr_str e1 ^ "\nin " ^ expr_str e2 ^ ")"
+      "(let " ^ x ^ " = " ^ expr_str e1 ^ " in " ^ expr_str e2 ^ ")"
   | LetRec (f, x, e1, e2) ->
       "(let rec " ^ f ^ " = fn " ^ x ^ " => " ^ expr_str e1 ^ "\nin "
       ^ expr_str e2 ^ ")"
   (* List related *)
   | Nil ->
       "Nil"
-  (*TODO| MatchList (e1, e2, x, xs, e3) ->
+  (*TODO
+  | MatchList (e1, e2, x, xs, e3) ->
       "match " ^ expr_str e1 ^ " with nil => " ^ expr_str e2 ^ "| " ^ x ^ " :: "
       ^ xs ^ " => " ^ expr_str e3
   (* Maybe related *)
-  | Nothing ->
-      "nothing"
   | Just e ->
       "Just " ^ expr_str e*)
+  | Nothing -> "Nothing"
 
 (* Auxiliary function to convert types to string *)
 let rec ttos (t:tipo) : string =
@@ -99,7 +99,6 @@ let rec print_subst (s:subst) =
       print_int a;
       print_string " |-> ";
       print_string (ttos b);
-      print_string "\n";
       print_subst s'
 
 let rec vtos (v: valor) : string =
@@ -112,3 +111,4 @@ let rec vtos (v: valor) : string =
   | VClos _ ->  "fn"
   | VRClos _ -> "fn"
   | VNil -> "nil"
+  | VNothing -> "nothing"

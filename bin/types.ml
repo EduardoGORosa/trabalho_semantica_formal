@@ -32,10 +32,12 @@ type expr =
   | App of expr * expr
   | Let of ident * expr * expr
   | LetRec of ident * ident * expr * expr
-  (*TODO| Nothing
+  | Nothing
+  (*TODO
   | Just of expr
   | MatchJust of expr * expr * ident * expr 
-  *)| Nil
+  *)
+  | Nil
   (*TODO| MatchList of expr * expr * ident * ident * expr
   | Cons of expr * expr*)
 
@@ -45,7 +47,8 @@ type valor =
   | VPair of valor * valor
   | VClos  of ident * expr * renv
   | VRClos of ident * ident * expr * renv 
-  (*TODO| VNothing
+  | VNothing
+  (*TODO
   | VJust of valor*)
   | VNil
  (*TODO | VCons of valor * valor*)

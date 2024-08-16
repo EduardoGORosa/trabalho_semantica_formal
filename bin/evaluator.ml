@@ -63,4 +63,5 @@ let rec eval (renv:renv) (e:expr) :valor =
       let renv'=  (f, VRClos(f,x,e1,renv)) :: renv
       in eval renv' e2
   | Nil -> VNil
+  | Nothing -> VNothing
 

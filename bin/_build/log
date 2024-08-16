@@ -1,0 +1,15 @@
+# dune ocaml top
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /home/dudu/.cache/dune/db
+# Workspace root: /home/dudu/repos/trabalho-semantica/l1interpreter/bin
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_583cfa_output

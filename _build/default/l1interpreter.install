@@ -3,9 +3,6 @@ lib: [
   "_build/install/default/lib/l1interpreter/dune-package"
   "_build/install/default/lib/l1interpreter/opam"
 ]
-bin: [
-  "_build/install/default/bin/l1interpreter"
-]
 doc: [
   "_build/install/default/doc/l1interpreter/README.md"
 ]
