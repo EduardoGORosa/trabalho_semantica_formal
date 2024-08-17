@@ -33,13 +33,14 @@ type expr =
   | Let of ident * expr * expr
   | LetRec of ident * ident * expr * expr
   | Nothing
-  (*TODO
   | Just of expr
   | MatchJust of expr * expr * ident * expr 
-  *)
   | Nil
-  (*TODO| MatchList of expr * expr * ident * ident * expr
-  | Cons of expr * expr*)
+  | MatchList of expr * expr * ident * ident * expr
+  | Cons of expr * expr
+  (*TODO
+  | Pipe of expr * expr
+   *)
 
 type valor = 
   | VNum of int
@@ -48,10 +49,9 @@ type valor =
   | VClos  of ident * expr * renv
   | VRClos of ident * ident * expr * renv 
   | VNothing
-  (*TODO
-  | VJust of valor*)
+  | VJust of valor
   | VNil
- (*TODO | VCons of valor * valor*)
+  | VCons of valor * valor
 
 and renv = (ident * valor) list  
 (* restrições de tipo  *)

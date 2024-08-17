@@ -54,13 +54,14 @@ let rec expr_str (e : expr) : string =
   (* List related *)
   | Nil ->
       "Nil"
-  (*TODO
+  | Cons (e1,e2) -> (expr_str e1) ^ "::" ^ (expr_str e2)
   | MatchList (e1, e2, x, xs, e3) ->
       "match " ^ expr_str e1 ^ " with nil => " ^ expr_str e2 ^ "| " ^ x ^ " :: "
       ^ xs ^ " => " ^ expr_str e3
-  (* Maybe related *)
+  | MatchJust (e1, e2, x, e3) ->
+      "match " ^ expr_str e1 ^ " with nothing => " ^ expr_str e2 ^ "|" ^ x ^ " => " ^ expr_str e3
   | Just e ->
-      "Just " ^ expr_str e*)
+      "Just " ^ expr_str e
   | Nothing -> "Nothing"
 
 (* Auxiliary function to convert types to string *)
@@ -112,3 +113,5 @@ let rec vtos (v: valor) : string =
   | VRClos _ -> "fn"
   | VNil -> "nil"
   | VNothing -> "nothing"
+  | VCons (v1, v2) -> vtos v1 ^ "::" ^ vtos v2
+  | VJust v1 -> "just" ^ vtos v1

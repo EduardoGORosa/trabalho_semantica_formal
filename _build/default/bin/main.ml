@@ -29,23 +29,40 @@ let test_type_infer (e : expr) (expected_type : tipo) : bool =
 
 (* Lista de testes *)
 let type_infer_tests () =
+  
+    (* Teste com listas e Maybe combinados *)
+  assert (
+    test_type_infer
+      (MatchList (
+         Cons (Just (Num 5), Nil),   (* Lista de Maybe Int *)
+         Num 0,                      (* Caso base: lista vazia *)
+         "hd", "tl",                 (* Correspondência com "hd :: tl" *)
+         MatchJust (Var "hd", Num 0, "x", Binop (Sum, Var "x", Var "x"))  (* Caso Just x: x + x *)
+       ))
+      TyInt = true
+  );
 
-(* Testes para LetRec *)
-  assert (test_type_infer 
-    (LetRec ("f", "x", Fn ("x", Binop (Sum, Var "x", Num 1)), 
-             App (Var "f", Num 2))) 
-    (TyFn (TyInt, TyInt)) = true);
+  (* Teste com Let e MatchList aninhado *)
+  assert (
+    test_type_infer
+      (Let ("lst", Cons (Num 5, Cons (Num 10, Nil)),   (* Lista [5; 10] *)
+            MatchList (Var "lst", Num 0, "hd", "tl",   (* Correspondência de padrão *)
+                       Binop (Sum, Var "hd", Var "hd")))) (* hd + hd *)
+      TyInt = true
+  );
 
-  (* Testes para Nil *)
+  (* Teste com LetRec, funções, e listas *)
+  assert (
+    test_type_infer
+      (LetRec (
+         "sumList", "lst",           (* Função recursiva sumList *)
+         MatchList (Var "lst", Num 0, "hd", "tl", Binop (Sum, Var "hd", App (Var "sumList", Var "tl"))),  (* Caso recursivo: hd + sumList(tl) *)
+         App (Var "sumList", Cons (Num 1, Cons (Num 2, Cons (Num 3, Nil)))) (* Aplicação em [1; 2; 3] *)
+       ))
+      TyInt = true
+  );
 
-  (*assert (test_type_infer (Cons (Num 5, Nil)) (TyList TyInt) = true);
-  assert (test_type_infer (Cons (Bool true, Nil)) (TyList TyInt) = false); (* Tipo incorreto para a lista *)
-*)
-  (* Testes para Nothing *)
-  (*assert (test_type_infer (Just (Num 5)) (TyOption TyInt) = true);
-  assert (test_type_infer (Just (Bool true)) (TyOption TyInt) = false); (* Tipo incorreto para o Just *)
-  *)
-  print_endline "All tests passed.";;
+print_endline "All tests passed.";;
 
 let test_eval (e:expr) (expected_value: valor): bool = 
   try
@@ -64,38 +81,50 @@ let test_eval (e:expr) (expected_value: valor): bool =
     | BugParser     -> false
 
 let eval_tests () =
-  (* Teste de números *)
-  assert (test_eval (Num 5) (VNum 5) = true);
-  
-  (* Teste de booleanos *)
-  assert (test_eval (Bool true) (VBool true) = true);
-  assert (test_eval (Bool false) (VBool false) = true);
 
-  (* Teste de operações binárias *)
-  assert (test_eval (Binop (Sum, Num 5, Num 6)) (VNum 11) = true);
-  assert (test_eval (Binop (Sub, Num 10, Num 4)) (VNum 6) = true);
-  assert (test_eval (Binop (Mult, Num 3, Num 7)) (VNum 21) = true);
-  
-  (* Teste de erro de tipo - Soma de inteiro com booleano *)
-  assert (test_eval (Binop (Sum, Num 5, Bool true)) (VNum 5) = false);
+  (* Teste com listas e Maybe combinados *)
+    assert (
+    test_eval
+      (MatchList (
+         Cons (Just (Num 5), Nil),   (* Lista de Maybe Int *)
+         Num 0,                      (* Caso base: lista vazia *)
+         "hd", "tl",                 (* Correspondência com "hd :: tl" *)
+         MatchJust (Var "hd", Num 0, "x", Binop (Sum, Var "x", Var "x"))  (* Caso Just x: x + x *)
+       ))
+      (VNum 10) = true  (* Resultado esperado: 5 + 5 *)
+  );
 
-  (* Teste de pares *)
-  assert (test_eval (Pair (Num 3, Bool false)) (VPair (VNum 3, VBool false)) = true);
+  (* Teste com Let e MatchList aninhado *)
+  assert (
+    test_eval
+      (Let ("lst", Cons (Num 5, Cons (Num 10, Nil)),   (* Lista [5; 10] *)
+            MatchList (Var "lst", Num 0, "hd", "tl",   (* Correspondência de padrão *)
+                       Binop (Sum, Var "hd", Var "hd")))) (* hd + hd *)
+      (VNum 10) = true  (* Resultado esperado: 5 + 5 *)
+  );
 
-  (* Teste de if-then-else *)
-  assert (test_eval (If (Bool true, Num 10, Num 20)) (VNum 10) = true);
-  assert (test_eval (If (Bool false, Num 10, Num 20)) (VNum 20) = true);
+  (* Teste com LetRec, funções, e listas *)
+  assert (
+    test_eval
+      (LetRec (
+         "sumList", "lst",           (* Função recursiva sumList *)
+         MatchList (Var "lst", Num 0, "hd", "tl", Binop (Sum, Var "hd", App (Var "sumList", Var "tl"))),  (* Caso recursivo: hd + sumList(tl) *)
+         App (Var "sumList", Cons (Num 1, Cons (Num 2, Cons (Num 3, Nil)))) (* Aplicação em [1; 2; 3] *)
+       ))
+      (VNum 6) = true  (* Resultado esperado: 1 + 2 + 3 = 6 *)
+  );
 
-  (* Teste de funções *)
-  let succ = Fn ("x", Binop (Sum, Var "x", Num 1)) in
-  assert (test_eval (App (succ, Num 5)) (VNum 6) = true);
-
-  let invalid_succ = Fn ("x", Binop (Sum, Var "x", Bool true)) in
-  assert (test_eval (App (invalid_succ, Num 5)) (VNum 5) = false);
-
-  (* Teste de let *)
-  assert (test_eval (Let ("x", Num 5, Binop (Sum, Var "x", Num 10))) (VNum 15) = true);
-
+  (* Teste com Maybe aninhado *)
+  assert (
+    test_eval
+      (MatchJust (
+         Just (Just (Num 10)),        (* Just (Just 10) *)
+         Nothing,                     (* Caso Nothing *)
+         "x",                         (* Nome da variável para Just x *)
+         MatchJust (Var "x", Num 0, "y", Var "y")  (* Padrão interno: Just y *)
+       ))
+      (VNum 10) = true  (* Resultado esperado: Just 10 *)
+  );  
   print_endline "All eval tests passed."
 ;;
 

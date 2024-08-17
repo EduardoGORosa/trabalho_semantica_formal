@@ -64,4 +64,26 @@ let rec eval (renv:renv) (e:expr) :valor =
       in eval renv' e2
   | Nil -> VNil
   | Nothing -> VNothing
-
+  | Just e ->
+      let v = eval renv e in
+      VJust v
+  | Cons (e1, e2) ->
+      let v1 = eval renv e1 in
+      let v2 = eval renv e2 in
+      (match v2 with
+       | VNil | VCons _ -> VCons (v1, v2)
+       | _ -> raise BugTypeInfer)
+  | MatchJust (e1, e2, x, e3) ->
+      let v1 = eval renv e1 in
+      (match v1 with
+       | VNothing -> eval renv e2
+       | VJust v ->
+           let renv' = (x, v) :: renv in
+           eval renv' e3
+       | _ -> raise BugTypeInfer)
+  | MatchList (e1, e2, hd, tl, e3) ->
+      let v1 = eval renv e1 in
+      (match v1 with 
+       | VNil -> eval renv e2
+       | VCons (h, t) -> eval ((hd, h) :: (tl, t) :: renv) e3
+       | _ -> raise BugTypeInfer)

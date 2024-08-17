@@ -85,20 +85,31 @@ let rec collect (g:tyenv) (e:expr) : (constraints * tipo)  =
       (c1@c2@[(TyVar tX,TyFn(TyVar tY,tp1))],   tp2)
   | Nothing -> let tX = newvar() in 
       ([], TyMaybe (TyVar tX))
- (*TODO 
-  | Just ->
-      let t = newvar() in
-  | MatchList ->
-  | MatchJust ->
-*)
+  | Just e ->
+      let c1, tp1 = collect g e in
+      (c1, TyMaybe tp1)
+  | MatchList (e1, e2, hd, tl, e3) -> 
+          let c1, tp1 = collect g e1 in
+          let c2, tp2 = collect g e2 in
+          let tX = newvar() in
+          let g' = (hd,TyVar tX) :: (tl, TyList (TyVar tX)) :: g in
+          let (c3, tp3) = collect g' e3 in
+          (c1 @ c2 @ c3 @ [(tp1, TyList (TyVar tX)); (tp2, tp3)], tp2)
+  | MatchJust (e1, e2, x, e3) ->
+      let tX = newvar() in
+      let tMaybe = TyMaybe (TyVar tX) in
+      let (c1, tp1) = collect g e1 in
+      let (c2, tp2) = collect g e2 in
+      let g' = (x, TyVar tX) :: g in
+      let (c3, tp3) = collect g' e3 in
+      (c1 @ c2 @ c3 @ [(tp1, tMaybe); (tp2, tp3)], tp2)
   | Nil ->
       let tX = newvar() in
       ([], TyList (TyVar tX))
-  (*TODO
   | Cons (e1,e2) ->
       let (c1,tp1) = collect g e1 in
       let (c2,tp2) = collect g e2 in
-      (c1@c2@[(tp2,TyList tp1)], tp2)*)
+      (c1@c2@[(tp2,TyList tp1)], tp2)
 
 (* aplicação de substituição a tipo *)         
 let rec appsubs (s:subst) (tp:tipo) : tipo =
