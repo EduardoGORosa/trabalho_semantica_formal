@@ -63,7 +63,7 @@ let rec expr_str (e : expr) : string =
   | Just e ->
       "Just " ^ expr_str e
   | Nothing -> "Nothing"
-
+  | Pipe (e1, e2) -> expr_str e1 ^ "|>" ^ expr_str e2
 (* Auxiliary function to convert types to string *)
 let rec ttos (t:tipo) : string =
   match t with

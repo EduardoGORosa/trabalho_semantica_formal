@@ -4,7 +4,8 @@ open Evaluator
 open Environment
 open Utils
 
-(*let int_bse (e:expr) : unit =
+(*
+let int_bse (e:expr) : unit =
   try
     let t = type_infer e in
     let v = eval [] e
@@ -15,7 +16,7 @@ open Utils
   | BugParser     ->  print_string "corrigir bug no parser para let rec"
 *)
 
-(* Função para testar a inferência de tipos *)
+  (* Função para testar a inferência de tipos *)
 let test_type_infer (e : expr) (expected_type : tipo) : bool =
   try
     let inferred_type = type_infer e in
@@ -65,20 +66,22 @@ let type_infer_tests () =
 print_endline "All tests passed.";;
 
 let test_eval (e:expr) (expected_value: valor): bool = 
-  try
-      let v = eval [] e in
+   try  
+     let v = eval [] e in
       print_string ("expr: " ^ expr_str e);
       print_string ("\n");
       print_string ("valor avaliado: " ^ vtos v);
       print_string ("\n");
       print_string ("\n");
       v = expected_value
-  with
-      TypeError msg ->  
+   with
+    TypeError msg ->  
           print_string ("erro de tipo - " ^ msg); 
           false    
     | BugTypeInfer  -> false   
     | BugParser     -> false
+;;
+
 
 let eval_tests () =
 
@@ -124,9 +127,27 @@ let eval_tests () =
          MatchJust (Var "x", Num 0, "y", Var "y")  (* Padrão interno: Just y *)
        ))
       (VNum 10) = true  (* Resultado esperado: Just 10 *)
-  );  
+  );
+
+  assert (
+    test_eval (
+  Pipe (
+    Fn ("z", Binop (Mult, Var "z", Var "z")),  (* Multiplica por 11 *)
+    Pipe (
+      Fn ("y", Binop (Sum, Var "y", Num 3)),  (* Soma 3 *)
+      Pipe (
+        Fn ("x", Binop (Mult, Var "x", Num 2)),  (* Multiplica por 2 *)
+        Num 4                                    (* Valor inicial: 4 *)
+      )
+    )
+  ))
+    (VNum 121) = true
+  );
+
   print_endline "All eval tests passed."
 ;;
+
+
 
 (* Chame ambos os testes *)
 let run_all_tests () =

@@ -110,7 +110,11 @@ let rec collect (g:tyenv) (e:expr) : (constraints * tipo)  =
       let (c1,tp1) = collect g e1 in
       let (c2,tp2) = collect g e2 in
       (c1@c2@[(tp2,TyList tp1)], tp2)
-
+  | Pipe (e1,e2) ->
+      let c1, tp1 = collect g e1 in
+      let c2, tp2 = collect g e2 in
+      let tX = newvar() in
+      (c1 @ c2 @ [(tp2, TyFn (tp1, TyVar tX))], TyVar tX)
 (* aplicação de substituição a tipo *)         
 let rec appsubs (s:subst) (tp:tipo) : tipo =
   match tp with

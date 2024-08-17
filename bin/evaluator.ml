@@ -87,3 +87,13 @@ let rec eval (renv:renv) (e:expr) :valor =
        | VNil -> eval renv e2
        | VCons (h, t) -> eval ((hd, h) :: (tl, t) :: renv) e3
        | _ -> raise BugTypeInfer)
+  | Pipe (e1, e2) ->
+      print_endline "Avaliando Pipe";    
+      let v1 = eval renv e1 in
+      let v2 = eval renv e2 in
+      (match v1 with 
+       | VClos(x, e', renv') ->
+           eval ((x,v2) :: renv')  e' 
+       | VRClos(f, x, e', renv') -> 
+           eval ((f,v1) :: (x,v2) :: renv')  e' 
+       | _  -> raise BugTypeInfer) 

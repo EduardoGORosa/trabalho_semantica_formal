@@ -38,9 +38,7 @@ type expr =
   | Nil
   | MatchList of expr * expr * ident * ident * expr
   | Cons of expr * expr
-  (*TODO
   | Pipe of expr * expr
-   *)
 
 type valor = 
   | VNum of int
