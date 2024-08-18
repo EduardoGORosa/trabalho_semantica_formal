@@ -19,8 +19,7 @@ let _ = int_bse (
   Let ("x", Bool true, 
     If (Var "x", 
       MatchJust (Nothing, Num 0, "y", Binop (Sum, Var "y", Num 10)), 
-      Num 5  (* Corrigido para evitar conflito entre tipos int e maybe int *)
-    )
+      Num 5)
   )
 )  (* Esperado: 0 : int *)
 
@@ -67,8 +66,7 @@ let _ = int_bse (
   Let ("result", MatchList (Var "l1", Var "l2", "x", "xs", 
     If (Binop (Lt, Var "x", Num 2), 
       Cons (Var "x", Var "xs"), 
-      Cons (Num 0, Var "xs"))  (* Corrigido para usar um número ao invés de 'true' *)
-  ),
+      Cons (Num 0, Var "xs"))),
   MatchList (Var "result", Num 0, "hd", "tl",
     If (Binop (Eq, Var "hd", Num 0), Num 1, Num 2)
   ))))
@@ -92,7 +90,6 @@ let _ = int_bse (
   Let ("f", Fn ("x", Binop (Mult, Var "x", Num 3)), 
   Let ("g", Fn ("y", Binop (Sum, Var "y", Num 10)),
   Let ("h", Fn ("z", Binop (Sub, Var "z", Num 5)),
-  Pipe (Pipe (Pipe (Num 4, Var "h"), Var "g"), Var "f")  (* A ordem correta das funções para o valor 4 *)
-  )))
+  Pipe (Pipe (Pipe (Num 4, Var "h"), Var "g"), Var "f"))))
 )  (* Esperado: 27 : int *)
 

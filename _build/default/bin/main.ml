@@ -19,8 +19,7 @@ let _ = int_bse (
   Let ("x", Bool true, 
     If (Var "x", 
       MatchJust (Nothing, Num 0, "y", Binop (Sum, Var "y", Num 10)), 
-      Num 5  (* Corrigido para evitar conflito entre tipos int e maybe int *)
-    )
+      Num 5)
   )
 )  (* Esperado: 0 : int *)
 
@@ -60,15 +59,14 @@ let _ = int_bse (
   ))))
 )  (* Esperado: 4 : int *)
 
-(* Teste corrigido para 'let l1 = 1 :: 2 :: 3 :: Nil in let l2 = 0 :: 1 :: Nil in let result = match l1 with nil => l2 | x :: xs => if (x < 2) then x :: xs else 0 :: xs in match result with nil => 0 | hd :: tl => if (hd = 0) then 1 else 2' *)
+(* Teste para 'let l1 = 1 :: 2 :: 3 :: Nil in let l2 = 0 :: 1 :: Nil in let result = match l1 with nil => l2 | x :: xs => if (x < 2) then x :: xs else 0 :: xs in match result with nil => 0 | hd :: tl => if (hd = 0) then 1 else 2' *)
 let _ = int_bse (
   Let ("l1", Cons (Num 1, Cons (Num 2, Cons (Num 3, Nil))),
   Let ("l2", Cons (Num 0, Cons (Num 1, Nil)),
   Let ("result", MatchList (Var "l1", Var "l2", "x", "xs", 
     If (Binop (Lt, Var "x", Num 2), 
       Cons (Var "x", Var "xs"), 
-      Cons (Num 0, Var "xs"))  (* Corrigido para usar um número ao invés de 'true' *)
-  ),
+      Cons (Num 0, Var "xs"))),
   MatchList (Var "result", Num 0, "hd", "tl",
     If (Binop (Eq, Var "hd", Num 0), Num 1, Num 2)
   ))))
@@ -87,12 +85,11 @@ let _ = int_bse (
   ))
 )  (* Esperado: 16 : int *)
 
-(* Teste correto para 'let f = fn x => (x * 3) in let g = fn y => (y + 10) in let h = fn z => (z - 5) in 4 |> f |> g |> h' *)
+(* Teste para 'let f = fn x => (x * 3) in let g = fn y => (y + 10) in let h = fn z => (z - 5) in 4 |> f |> g |> h' *)
 let _ = int_bse (
   Let ("f", Fn ("x", Binop (Mult, Var "x", Num 3)), 
   Let ("g", Fn ("y", Binop (Sum, Var "y", Num 10)),
   Let ("h", Fn ("z", Binop (Sub, Var "z", Num 5)),
-  Pipe (Pipe (Pipe (Num 4, Var "h"), Var "g"), Var "f")  (* A ordem correta das funções para o valor 4 *)
-  )))
+  Pipe (Pipe (Pipe (Num 4, Var "h"), Var "g"), Var "f"))))
 )  (* Esperado: 27 : int *)
 
