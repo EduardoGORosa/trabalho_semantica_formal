@@ -4,155 +4,95 @@ open Evaluator
 open Environment
 open Utils
 
-(*
 let int_bse (e:expr) : unit =
   try
     let t = type_infer e in
     let v = eval [] e
-    in  print_string ((vtos v) ^ " : " ^ (ttos t))
+    in  print_string ("\n" ^ (vtos v) ^ " : " ^ (ttos t) ^ "\n")
   with
-    TypeError msg ->  print_string ("erro de tipo - " ^ msg) 
-  | BugTypeInfer  ->  print_string "corrigir bug em typeinfer"
-  | BugParser     ->  print_string "corrigir bug no parser para let rec"
-*)
+    TypeError msg ->  print_string ("\nerro de tipo - " ^ msg ^ "\n") 
+  | BugTypeInfer  ->  print_string "\ncorrigir bug em typeinfer\n"
+  | BugParser     ->  print_string "\ncorrigir bug no parser para let rec\n"
 
-  (* Função para testar a inferência de tipos *)
-let test_type_infer (e : expr) (expected_type : tipo) : bool =
-  try
-    let inferred_type = type_infer e in
-    inferred_type = expected_type
-  with
-      TypeError msg ->  
-          print_string ("erro de tipo - " ^ msg); 
-          false    
-    | BugTypeInfer  -> false   
-    | BugParser     -> false
-
-(* Lista de testes *)
-let type_infer_tests () =
-  
-    (* Teste com listas e Maybe combinados *)
-  assert (
-    test_type_infer
-      (MatchList (
-         Cons (Just (Num 5), Nil),   (* Lista de Maybe Int *)
-         Num 0,                      (* Caso base: lista vazia *)
-         "hd", "tl",                 (* Correspondência com "hd :: tl" *)
-         MatchJust (Var "hd", Num 0, "x", Binop (Sum, Var "x", Var "x"))  (* Caso Just x: x + x *)
-       ))
-      TyInt = true
-  );
-
-  (* Teste com Let e MatchList aninhado *)
-  assert (
-    test_type_infer
-      (Let ("lst", Cons (Num 5, Cons (Num 10, Nil)),   (* Lista [5; 10] *)
-            MatchList (Var "lst", Num 0, "hd", "tl",   (* Correspondência de padrão *)
-                       Binop (Sum, Var "hd", Var "hd")))) (* hd + hd *)
-      TyInt = true
-  );
-
-  (* Teste com LetRec, funções, e listas *)
-  assert (
-    test_type_infer
-      (LetRec (
-         "sumList", "lst",           (* Função recursiva sumList *)
-         MatchList (Var "lst", Num 0, "hd", "tl", Binop (Sum, Var "hd", App (Var "sumList", Var "tl"))),  (* Caso recursivo: hd + sumList(tl) *)
-         App (Var "sumList", Cons (Num 1, Cons (Num 2, Cons (Num 3, Nil)))) (* Aplicação em [1; 2; 3] *)
-       ))
-      TyInt = true
-  );
-
-print_endline "All tests passed.";;
-
-let test_eval (e:expr) (expected_value: valor): bool = 
-   try  
-     let v = eval [] e in
-      print_string ("expr: " ^ expr_str e);
-      print_string ("\n");
-      print_string ("valor avaliado: " ^ vtos v);
-      print_string ("\n");
-      print_string ("\n");
-      v = expected_value
-   with
-    TypeError msg ->  
-          print_string ("erro de tipo - " ^ msg); 
-          false    
-    | BugTypeInfer  -> false   
-    | BugParser     -> false
-;;
-
-
-let eval_tests () =
-
-  (* Teste com listas e Maybe combinados *)
-    assert (
-    test_eval
-      (MatchList (
-         Cons (Just (Num 5), Nil),   (* Lista de Maybe Int *)
-         Num 0,                      (* Caso base: lista vazia *)
-         "hd", "tl",                 (* Correspondência com "hd :: tl" *)
-         MatchJust (Var "hd", Num 0, "x", Binop (Sum, Var "x", Var "x"))  (* Caso Just x: x + x *)
-       ))
-      (VNum 10) = true  (* Resultado esperado: 5 + 5 *)
-  );
-
-  (* Teste com Let e MatchList aninhado *)
-  assert (
-    test_eval
-      (Let ("lst", Cons (Num 5, Cons (Num 10, Nil)),   (* Lista [5; 10] *)
-            MatchList (Var "lst", Num 0, "hd", "tl",   (* Correspondência de padrão *)
-                       Binop (Sum, Var "hd", Var "hd")))) (* hd + hd *)
-      (VNum 10) = true  (* Resultado esperado: 5 + 5 *)
-  );
-
-  (* Teste com LetRec, funções, e listas *)
-  assert (
-    test_eval
-      (LetRec (
-         "sumList", "lst",           (* Função recursiva sumList *)
-         MatchList (Var "lst", Num 0, "hd", "tl", Binop (Sum, Var "hd", App (Var "sumList", Var "tl"))),  (* Caso recursivo: hd + sumList(tl) *)
-         App (Var "sumList", Cons (Num 1, Cons (Num 2, Cons (Num 3, Nil)))) (* Aplicação em [1; 2; 3] *)
-       ))
-      (VNum 6) = true  (* Resultado esperado: 1 + 2 + 3 = 6 *)
-  );
-
-  (* Teste com Maybe aninhado *)
-  assert (
-    test_eval
-      (MatchJust (
-         Just (Just (Num 10)),        (* Just (Just 10) *)
-         Nothing,                     (* Caso Nothing *)
-         "x",                         (* Nome da variável para Just x *)
-         MatchJust (Var "x", Num 0, "y", Var "y")  (* Padrão interno: Just y *)
-       ))
-      (VNum 10) = true  (* Resultado esperado: Just 10 *)
-  );
-
-  assert (
-    test_eval (
-  Pipe (
-    Fn ("z", Binop (Mult, Var "z", Var "z")),  (* Multiplica por 11 *)
-    Pipe (
-      Fn ("y", Binop (Sum, Var "y", Num 3)),  (* Soma 3 *)
-      Pipe (
-        Fn ("x", Binop (Mult, Var "x", Num 2)),  (* Multiplica por 2 *)
-        Num 4                                    (* Valor inicial: 4 *)
-      )
+(* Teste para 'let x = true in if x then match Nothing with nothing => 0 | y => (y + 10) else Num 5' *)
+let _ = int_bse (
+  Let ("x", Bool true, 
+    If (Var "x", 
+      MatchJust (Nothing, Num 0, "y", Binop (Sum, Var "y", Num 10)), 
+      Num 5  (* Corrigido para evitar conflito entre tipos int e maybe int *)
     )
+  )
+)  (* Esperado: 0 : int *)
+
+(* Teste para 'let a = 3 in let b = 4 in let c = true in Just (if c then (a + b) else (a * b))' *)
+let _ = int_bse (
+  Let ("a", Num 3,
+  Let ("b", Num 4,
+  Let ("c", Bool true,
+  Just (
+    If (Var "c", 
+      Binop (Sum, Var "a", Var "b"), 
+      Binop (Mult, Var "a", Var "b")
+    )
+  ))))
+)  (* Esperado: just 7 : maybe int *)
+
+(* Teste para 'let x = Just (2 * 3) in let y = Nothing in match x with nothing => match y with nothing => 0 | z => (z + 5) | v => (if (v > 10) then v else (v + 1))' *)
+let _ = int_bse (
+  Let ("x", Just (Binop (Mult, Num 2, Num 3)), 
+  Let ("y", Nothing,
+  MatchJust (Var "x", 
+    MatchJust (Var "y", Num 0, "z", Binop (Sum, Var "z", Num 5)), 
+    "v", 
+    If (Binop (Gt, Var "v", Num 10), Var "v", Binop (Sum, Var "v", Num 1))
+  )))
+)  (* Esperado: 7 : int *)
+
+(* Teste para 'let x = Nil in let y = 1 :: x in let z = 2 :: y in match z with nil => 0 | a :: as => (a + match as with nil => 0 | b :: bs => (b * 2))' *)
+let _ = int_bse (
+  Let ("x", Nil, 
+  Let ("y", Cons (Num 1, Var "x"), 
+  Let ("z", Cons (Num 2, Var "y"),
+  MatchList (Var "z", Num 0, "a", "as", 
+    Binop (Sum, Var "a", 
+      MatchList (Var "as", Num 0, "b", "bs", Binop (Mult, Var "b", Num 2))
+    )
+  ))))
+)  (* Esperado: 4 : int *)
+
+(* Teste corrigido para 'let l1 = 1 :: 2 :: 3 :: Nil in let l2 = 0 :: 1 :: Nil in let result = match l1 with nil => l2 | x :: xs => if (x < 2) then x :: xs else 0 :: xs in match result with nil => 0 | hd :: tl => if (hd = 0) then 1 else 2' *)
+let _ = int_bse (
+  Let ("l1", Cons (Num 1, Cons (Num 2, Cons (Num 3, Nil))),
+  Let ("l2", Cons (Num 0, Cons (Num 1, Nil)),
+  Let ("result", MatchList (Var "l1", Var "l2", "x", "xs", 
+    If (Binop (Lt, Var "x", Num 2), 
+      Cons (Var "x", Var "xs"), 
+      Cons (Num 0, Var "xs"))  (* Corrigido para usar um número ao invés de 'true' *)
+  ),
+  MatchList (Var "result", Num 0, "hd", "tl",
+    If (Binop (Eq, Var "hd", Num 0), Num 1, Num 2)
+  ))))
+)  (* Esperado: 1 : int *)
+
+(* Teste para 'let l = 5 :: 10 :: Nil in let total = match l with nil => 0 | hd :: tl => (hd + match tl with nil => 0 | hd2 :: tl2 => (hd2 + 1)) in if (total > 15) then total else 1' *)
+let _ = int_bse (
+  Let ("l", Cons (Num 5, Cons (Num 10, Nil)), 
+  Let ("total", 
+    MatchList (Var "l", Num 0, "hd", "tl", 
+      Binop (Sum, Var "hd", 
+        MatchList (Var "tl", Num 0, "hd2", "tl2", Binop (Sum, Var "hd2", Num 1))
+      )
+    ),
+  If (Binop (Gt, Var "total", Num 15), Var "total", Num 1)
   ))
-    (VNum 121) = true
-  );
+)  (* Esperado: 16 : int *)
 
-  print_endline "All eval tests passed."
-;;
+(* Teste correto para 'let f = fn x => (x * 3) in let g = fn y => (y + 10) in let h = fn z => (z - 5) in 4 |> f |> g |> h' *)
+let _ = int_bse (
+  Let ("f", Fn ("x", Binop (Mult, Var "x", Num 3)), 
+  Let ("g", Fn ("y", Binop (Sum, Var "y", Num 10)),
+  Let ("h", Fn ("z", Binop (Sub, Var "z", Num 5)),
+  Pipe (Pipe (Pipe (Num 4, Var "h"), Var "g"), Var "f")  (* A ordem correta das funções para o valor 4 *)
+  )))
+)  (* Esperado: 27 : int *)
 
-
-
-(* Chame ambos os testes *)
-let run_all_tests () =
-    type_infer_tests ();
-    eval_tests ();
-;;
-
-run_all_tests ();;

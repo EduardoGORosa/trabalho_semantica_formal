@@ -186,33 +186,33 @@ let rec unify (c:constraints) : subst =
 
 (* INFERÊNCIA DE TIPOS - CHAMADA PRINCIPAL *)
 let type_infer (e:expr) : tipo =
-  print_string "expr:";
+  print_string "\nexpr:\n";
   print_string (expr_str e);
   print_string "\n";
   try
     let (c,tp) = collect [] e  in
     let s      = unify c       in
     let tf     = appsubs s tp  in
-    print_string "Restrições:";
+    print_string "\nRestrições:\n";
     print_constr c;
     print_string "\n";
-    print_string "Tipo inferido: ";    
+    print_string "\nTipo inferido:\n";    
     print_string (ttos tp);
     print_string "\n";
-    print_string "Substituição:";
+    print_string "\nSubstituição:\n";
     print_subst s;
     print_string "\n";
-    print_string "Tipo inferido (após subs): ";
+    print_string "\nTipo inferido (após subs):\n";
     print_string (ttos tf);
     print_string "\n\n";
     tf
   with
     
-  | CollectFail x   -> print_string "Erro: variável ";
+  | CollectFail x   -> print_string "\nErro: variável\n";
       print_string x;
       print_string "não declarada!\n\n";
       TyBool              
-  | UnifyFail (tp1,tp2) -> print_string "Erro: impossível unificar os tipos\n* ";
+  | UnifyFail (tp1,tp2) -> print_string "\nErro: impossível unificar os tipos\n* ";
       print_string (ttos tp1);
       print_string "\n* ";
       print_string (ttos tp2);
